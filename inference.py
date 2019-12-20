@@ -43,7 +43,7 @@ def download_video_frames(video_url):
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--video-file', dest="videofile", help="Video file already downloaded")
+	parser.add_argument('--video-file', dest="videofile", help="Video file if already downloaded")
 	parser.add_argument('--video-url', dest="videourl", help="Video URL")
 	parser.add_argument('--fps', default=1, help="FPS for sampling input video")
 	parser.add_argument('--dest', help="Save video frames in this directory")
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
 	eyes = torch.zeros(N,3)
 
-	x_offset, y_offset, x_center, y_center, person_looking_at_camera, frames_processed = 0, 0, 0, 0, 0, 0
+	x_offset, y_offset, x_center, y_center, person_looking_at_camera, frames_processed, frames_without_face = 0, 0, 0, 0, 0, 0, 0
 
 	for i in range(len(frame_list)):
 		print('Processing of frame %d out of %d' % (i,len(frame_list)))
@@ -187,8 +187,10 @@ if __name__ == '__main__':
 					person_looking_at_camera += 1
 
 				print("person_looking {}, x_class {}, y_class {}, x_float {}, y_float {}, x_point {}, y_point {}, target_im {}".format(person_looking_at_camera, x_class, y_class, x_float, y_float, x_point, y_point, target_im.shape))
-
+			else:
+				frames_without_face += 1
 	if frames_processed > 0:
 		print ("Person looking at the camera in {}% frames".format(math.ceil((person_looking_at_camera / frames_processed) * 100)))
+		print ("{}% of frames did not have a face".format(math.ceil((frames_without_face / frames_processed) * 100)))
 	else:
 		print ("Error: No frames to process")
